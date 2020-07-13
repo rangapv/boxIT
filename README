@@ -1,0 +1,2 @@
+The boxit.sh will install kubernetes Master/Node with command line arguments for Netwroking(flannel/calico etc) and GCP info like projectid,APIkeys etc..
+THis is a UNIVERSAL installer for the GCP Cloud! Have FUN!
