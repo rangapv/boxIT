@@ -1,7 +1,5 @@
 #!/bin/bash
-echo "Hello"
-echo $1
-echo $2
+#set -n
 
 git_exe(){
 if [  $2 == 0 ]
@@ -35,7 +33,10 @@ cd $HOME/adm/kube_flannel
 kubectl apply -f ./kube-flannel.yml
 }
 
-
+git_calico(){
+cd $HOME/adm/kube_calico
+kubectl apply -f ./kube-calico.yaml
+}
 
 git_dash(){
 cd $HOME/adm/kube_dash
@@ -65,24 +66,36 @@ git_exe Kube_Master $?
 
 git_copy $1 $2
 
-gitconf=`git pull https://gist.github.com/fc63aa5af25f2769b87d7db24cae91cd.git`
-echo $?
-
-if [ $? == 0 ]
+if [ $3 == 'calico' ]
 then
-  echo "Everything in Place pls execute this command sudo kubeadm init --config=./adm-conf.yaml"
-  sudo kubeadm init --config=./adm-conf.yaml
-
+gitconf=`git pull https://gist.github.com/88ea8468046bfe19b53a5ff9d0c025f0.git`
+sudo kubeadm init --config=./adm-calico-conf.yaml
+elif [ $3 == 'flannel' ]
+then
+gitconf=`git pull https://gist.github.com/fc63aa5af25f2769b87d7db24cae91cd.git`
+sudo kubeadm init --config=./adm-conf.yaml
+else
+echo "No Networ Selected, Re-execute"
 fi
 
+{
 
 git_kubectl
 
+if [ $3 == 'flannel' ]
+then
 git_flannel
+elif [ $3 == 'calico' ]
+then
+git_calico
+else
+echo "No Network selected"
+fi
 
 git_dash
 
 git_secret
 
 git_ccm
- 
+
+} 
