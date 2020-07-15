@@ -1,5 +1,4 @@
 #!/bin/bash
-#set -n
 
 git_exe(){
 if [  $2 == 0 ]
@@ -38,7 +37,7 @@ cd $HOME/adm/kube_calico
 kubectl apply -f ./kube-calico.yaml
 }
 
-git_kubeadm(){
+git_kubelet(){
 FILENAME="/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
 sudo chmod 644 /etc/systemd/system/kubelet.service.d/10-kubeadm.conf 
 while IFS= read -r line
@@ -65,6 +64,18 @@ kubectl apply -f ./recommended.yaml
 kubectl apply -f ./dashboard-adminuser.yaml
 }
 
+git_clean(){
+if [ -f $1 ]
+then
+ `sudo truncate -s 0 $1`
+else
+ echo "Not Much"
+fi
+}
+
+git_clean /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+git_clean /etc/kubernetes/gce.conf
+
 git1=`git init`
 echo $?
 gitpy=`mkdir pyup;cd pyup;git init;git pull https://github.com/rangapv/pyUpgrade.git;./py.sh`
@@ -75,11 +86,10 @@ gitadm=`mkdir adm;cd adm;git init;git pull https://github.com/rangapv/k8s.git;cd
 git_exe Kube_Node $?
 
 git_copy $1 $2
-
 {
 echo "Copy the master config to node/.kube"
 #echo "make changes to kubelet file in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf "
-git_kubeadm
+git_kubelet
 
 echo "execute the kubeadm join that you got from the Master node"
-} 
+}
