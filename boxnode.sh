@@ -38,6 +38,27 @@ cd $HOME/adm/kube_calico
 kubectl apply -f ./kube-calico.yaml
 }
 
+git_kubeadm(){
+FILENAME="/etc/systemd/system/kubelet.service.d/10-kubeadm.conf"
+sudo chmod 644 /etc/systemd/system/kubelet.service.d/10-kubeadm.conf 
+while IFS= read -r line
+do
+if [[ "$line" == *"Environment=\"KUBELET_KUBECONFIG_ARGS=--boot"* ]]
+then
+declare -i nu=${#line}
+declare -i su1=$(( nu - 1 ))
+new1=$(echo "$line" | cut -c 1-$su1)
+new2="--cloud-provider=external --cloud-config=/etc/kubernetes/gce.conf\""
+str1="${new1} ${new2}"
+str3=${str1//\//\\\/}
+str4=${str3//\"/\\\"}
+sudo sed -i "/Environment=\"KUBELET_KUBECONFIG_ARGS=--boots/s/.*/$str4/" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+fi
+done < "$FILENAME"
+sudo chmod 640 /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+}
+
+
 git_dash(){
 cd $HOME/adm/kube_dash
 kubectl apply -f ./recommended.yaml
@@ -55,11 +76,10 @@ git_exe Kube_Node $?
 
 git_copy $1 $2
 
-
 {
-
 echo "Copy the master config to node/.kube"
-echo "make changes to kubelet file in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf "
-echo "execute the kubeadm join that you got from the Master node"
+#echo "make changes to kubelet file in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf "
+git_kubeadm
 
+echo "execute the kubeadm join that you got from the Master node"
 } 
