@@ -1,5 +1,6 @@
 #!/bin/bash
 #set -n
+#./boxit.sh project_id APIkey netwrok(flannel/calico)
 
 git_exe(){
 if [  $2 == 0 ]
@@ -75,7 +76,7 @@ then
 gitconf=`git pull https://gist.github.com/fc63aa5af25f2769b87d7db24cae91cd.git`
 sudo kubeadm init --config=./adm-conf.yaml
 else
-echo "No Networ Selected, Re-execute"
+echo "No Network Selected, Re-execute"
 fi
 
 {

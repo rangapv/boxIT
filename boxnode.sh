@@ -1,4 +1,5 @@
 #!/bin/bash
+#./boxnode.sh project_id APIkey
 
 git_exe(){
 if [  $2 == 0 ]
@@ -88,7 +89,6 @@ git_exe Kube_Node $?
 git_copy $1 $2
 {
 echo "Copy the master config to node/.kube"
-#echo "make changes to kubelet file in /etc/systemd/system/kubelet.service.d/10-kubeadm.conf "
 git_kubelet
 
 echo "execute the kubeadm join that you got from the Master node"
